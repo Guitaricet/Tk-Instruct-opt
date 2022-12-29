@@ -94,10 +94,10 @@ if __name__ == "__main__":
     'lm_head': 1,
     }
 
-
-    model = AutoModelForCausalLM.from_pretrained('facebook/opt-30b', device_map=device_map, load_in_8bit=True)
+    modelname = 'facebook/opt-125m'
+    model = AutoModelForCausalLM.from_pretrained(modelname, device_map="auto", load_in_8bit=True)
     model.eval()
-    tokenizer = AutoTokenizer.from_pretrained('facebook/opt-30b', return_tensors="pt")
+    tokenizer = AutoTokenizer.from_pretrained(modelname, return_tensors="pt")
     data_collator = DataCollatorForNI(
         tokenizer,
         model=None,
