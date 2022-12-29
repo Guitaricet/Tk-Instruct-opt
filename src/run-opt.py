@@ -96,6 +96,7 @@ if __name__ == "__main__":
 
 
     model = AutoModelForCausalLM.from_pretrained('facebook/opt-30b', device_map=device_map, load_in_8bit=True)
+    model.eval()
     tokenizer = AutoTokenizer.from_pretrained('facebook/opt-30b', return_tensors="pt")
     data_collator = DataCollatorForNI(
         tokenizer,
@@ -131,35 +132,36 @@ if __name__ == "__main__":
 
 
     with open(os.path.join(args.output_dir, "predicted_examples.jsonl"), "w") as fout:
-        for example in tqdm.tqdm(raw_datasets["test"]):
-            encoded_example = data_collator([example])
-            
-            example["opt_input"] = encoded_example["inputs"][0].strip()
-            example["opt_target"] = encoded_example["labels"][0].strip()
-
-            if example["opt_input"] in existing_requests:
-                response = existing_requests[example["opt_input"]]
-            else:
-                tok_input = tokenizer(example["opt_input"], return_tensors="pt")
-                tok_input_ids = tok_input.input_ids.to("cuda")
-                output = model.generate(tok_input_ids, max_length=len(tok_input.input_ids[0])+args.max_target_length, return_dict_in_generate=True, output_attentions=True)
-                generate_ids = output[0]
-                attentions = output[1]
-                response = tokenizer.decode(generate_ids[0][len(tok_input.input_ids[0]):], skip_special_tokens=True, clean_up_tokenization_spaces=False)
-                example["opt_response"] = response
-
-                # save attentions
-                task_attn_path = 'attentions/definition-before/{}'.format(example['Task']) 
-                if not os.path.exists(task_attn_path):
-                    os.makedirs(task_attn_path)
-
-                with open('attentions/definition-before/{}/{}.pickle'.format(example['Task'], example['Instance']['id']), 'wb') as handle:
-                        pickle.dump(attentions, handle)
+        with torch.no_grad():
+            for example in tqdm.tqdm(raw_datasets["test"]):
+                encoded_example = data_collator([example])
                 
-            # Note: we cut the generated text at the first period, since the GPT3 language model sometimes generates more than one sentences.
-            # Our results show that this won't affect the instruct-GPT3 model very much, but will significantly improve the original GPT3 LM.
-            example["prediction"] = response.strip().split(".")[0]
-            print(example["prediction"])
-            fout.write(json.dumps(example) + "\n")
+                example["opt_input"] = encoded_example["inputs"][0].strip()
+                example["opt_target"] = encoded_example["labels"][0].strip()
+
+                if example["opt_input"] in existing_requests:
+                    response = existing_requests[example["opt_input"]]
+                else:
+                    tok_input = tokenizer(example["opt_input"], return_tensors="pt")
+                    tok_input_ids = tok_input.input_ids.to("cuda")
+                    output = model.generate(tok_input_ids, max_length=len(tok_input.input_ids[0])+args.max_target_length, return_dict_in_generate=True, output_attentions=True)
+                    generate_ids = output[0]
+                    attentions = output[1]
+                    response = tokenizer.decode(generate_ids[0][len(tok_input.input_ids[0]):], skip_special_tokens=True, clean_up_tokenization_spaces=False)
+                    example["opt_response"] = response
+
+                    # save attentions
+                    task_attn_path = 'attentions/definition-before/{}'.format(example['Task']) 
+                    if not os.path.exists(task_attn_path):
+                        os.makedirs(task_attn_path)
+
+                    with open('attentions/definition-before/{}/{}.pickle'.format(example['Task'], example['Instance']['id']), 'wb') as handle:
+                            pickle.dump(attentions, handle)
+                    
+                # Note: we cut the generated text at the first period, since the GPT3 language model sometimes generates more than one sentences.
+                # Our results show that this won't affect the instruct-GPT3 model very much, but will significantly improve the original GPT3 LM.
+                example["prediction"] = response.strip().split(".")[0]
+                print(example["prediction"])
+                fout.write(json.dumps(example) + "\n")
 
         
