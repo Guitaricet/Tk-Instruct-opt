@@ -143,7 +143,7 @@ if __name__ == "__main__":
             else:
                 tok_input = tokenizer(example["opt_input"], return_tensors="pt")
                 tok_input = tok_input.to("cuda")
-                output = model.generate(**tok_input, max_length=len(tok_input.input_ids[0])+args.max_target_length, return_dict_in_generate=True)
+                output = model.generate(**tok_input, max_length=len(tok_input.input_ids[0])+args.max_target_length, return_dict_in_generate=True, output_attentions=True)
                 generate_ids = output[0]
                 attentions = output[1]
                 response = tokenizer.decode(generate_ids[0][len(tok_input.input_ids[0]):], skip_special_tokens=True, clean_up_tokenization_spaces=False)
