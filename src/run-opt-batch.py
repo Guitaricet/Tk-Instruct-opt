@@ -27,7 +27,8 @@ class OPTArguments(DataTrainingArguments):
 
 
 if __name__ == "__main__":
-    #device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    
     random.seed(123)
     parser = HfArgumentParser((OPTArguments,))
     args, = parser.parse_args_into_dataclasses()
@@ -94,10 +95,13 @@ if __name__ == "__main__":
     'lm_head': 1,
     }
 
-    modelname = 'facebook/opt-30b'
-    model = AutoModelForCausalLM.from_pretrained(modelname, device_map=device_map, load_in_8bit=True)
+    modelname = 'facebook/opt-125m'
+    model = AutoModelForCausalLM.from_pretrained(modelname)#, device_map="auto", load_in_8bit=True)
     model.eval()
     tokenizer = AutoTokenizer.from_pretrained(modelname, return_tensors="pt")
+    tokenizer.padding_side = "left" 
+    tokenizer.pad_token = tokenizer.eos_token # to avoid an error
+
     data_collator = DataCollatorForNI(
         tokenizer,
         model=None,
@@ -130,8 +134,19 @@ if __name__ == "__main__":
                 request_info = json.loads(line)
                 existing_requests[request_info["opt_input"]] = request_info["opt_response"]
 
+
+    eval_dataloader = torch.utils.data.DataLoader(raw_datasets["test"], batch_size=4, collate_fn=data_collator)
+
+    
+
     with open(os.path.join(args.output_dir, "predicted_examples.jsonl"), "w") as fout:
         with torch.no_grad():
+            for i, batch in enumerate(eval_dataloader): #https://github.com/huggingface/transformers/issues/10704
+      
+            
+            
+            
+            
             for example in tqdm.tqdm(raw_datasets["test"]):
                 encoded_example = data_collator([example])
                 
@@ -144,7 +159,7 @@ if __name__ == "__main__":
                     response = existing_requests[example["opt_input"]]
                 else:
                     tok_input = tokenizer(example["opt_input"], return_tensors="pt")
-                    tok_input_ids = tok_input.input_ids.to("cuda")
+                    tok_input_ids = tok_input.input_ids.to(device)
                     output = model.generate(tok_input_ids, max_length=len(tok_input.input_ids[0])+args.max_target_length, return_dict_in_generate=True, output_attentions=True)
                     generate_ids = output[0]
                     attentions = output[1]
