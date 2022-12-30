@@ -10,6 +10,7 @@ from datasets import load_dataset
 from ni_collator import DataCollatorForNI
 from dataclasses import dataclass, field
 from transformers import AutoModelForCausalLM, AutoTokenizer
+import time
 
 
 @dataclass
@@ -133,21 +134,37 @@ if __name__ == "__main__":
     with open(os.path.join(args.output_dir, "predicted_examples.jsonl"), "w") as fout:
         with torch.no_grad():
             for example in tqdm.tqdm(raw_datasets["test"]):
+                print("Step1")
+                print(time.perf_counter())
                 encoded_example = data_collator([example])
-                
+                print("Step2")
+                print(time.perf_counter())
                 example["opt_input"] = encoded_example["inputs"][0].strip()
                 example["opt_target"] = encoded_example["labels"][0].strip()
 
                 print(example["opt_input"])
-
+                print("Step3")
+                print(time.perf_counter())
                 if example["opt_input"] in existing_requests:
                     response = existing_requests[example["opt_input"]]
+                    print("Step4")
+                    print(time.perf_counter())
                 else:
+                    print("Step5")
+                    print(time.perf_counter())
                     tok_input = tokenizer(example["opt_input"], return_tensors="pt")
                     tok_input_ids = tok_input.input_ids.to("cuda")
+                    
+                    print("Step6")
+                    print(time.perf_counter())
                     output = model.generate(tok_input_ids, max_length=len(tok_input.input_ids[0])+args.max_target_length, return_dict_in_generate=True)
+                    
+                    print("Step7")
+                    print(time.perf_counter())
                     generate_ids = output[0]
                     # attentions = output[1]
+                    print("Step68")
+                    print(time.perf_counter())
                     response = tokenizer.decode(generate_ids[0][len(tok_input.input_ids[0]):], skip_special_tokens=True, clean_up_tokenization_spaces=False)
                     example["opt_response"] = response
 
@@ -161,8 +178,12 @@ if __name__ == "__main__":
                     
                 # Note: we cut the generated text at the first period, since the GPT3 language model sometimes generates more than one sentences.
                 # Our results show that this won't affect the instruct-GPT3 model very much, but will significantly improve the original GPT3 LM.
+                print("Step9")
+                print(time.perf_counter())
                 example["prediction"] = response.strip().split(".")[0]
                 print(example["prediction"])
                 fout.write(json.dumps(example) + "\n")
+                print("Step10")
+                print(time.perf_counter())
 
         

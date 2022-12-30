@@ -17,7 +17,9 @@ python src/run-opt.py \
     --num_neg_examples 0 \
     --add_explanation False \
     --max_source_length 1024 \
-    --max_target_length 128 \
+    --max_target_length 5 \
     --output_dir ${output_dir}/default/opt
     
 python src/compute_metrics.py --predictions ${output_dir}/default/opt/predicted_examples.jsonl --track default --compute_per_category_metrics --compute_per_task_metrics
+
+# rm -rf /home/hf_cache/datasets_cache/natural_instructions/
