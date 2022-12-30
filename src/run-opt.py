@@ -156,8 +156,8 @@ if __name__ == "__main__":
                     # if not os.path.exists(task_attn_path):
                     #     os.makedirs(task_attn_path)
 
-                    with open('attentions/definition-before/{}/{}.pickle'.format(example['Task'], example['Instance']['id']), 'wb') as handle:
-                            pickle.dump(attentions, handle)
+                    # with open('attentions/definition-before/{}/{}.pickle'.format(example['Task'], example['Instance']['id']), 'wb') as handle:
+                    #         pickle.dump(attentions, handle)
                     
                 # Note: we cut the generated text at the first period, since the GPT3 language model sometimes generates more than one sentences.
                 # Our results show that this won't affect the instruct-GPT3 model very much, but will significantly improve the original GPT3 LM.
