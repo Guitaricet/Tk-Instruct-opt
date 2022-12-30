@@ -94,7 +94,7 @@ if __name__ == "__main__":
     'lm_head': 1,
     }
 
-    modelname = 'facebook/opt-125m'
+    modelname = 'facebook/opt-30b'
     model = AutoModelForCausalLM.from_pretrained(modelname, device_map="auto", load_in_8bit=True)
     model.eval()
     tokenizer = AutoTokenizer.from_pretrained(modelname, return_tensors="pt")
