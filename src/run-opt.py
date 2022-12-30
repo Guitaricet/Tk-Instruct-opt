@@ -95,7 +95,7 @@ if __name__ == "__main__":
     }
 
     modelname = 'facebook/opt-125m'
-    model = AutoModelForCausalLM.from_pretrained(modelname, device_map="auto", load_in_8bit=True)
+    model = AutoModelForCausalLM.from_pretrained(modelname)#, device_map="auto", load_in_8bit=True)
     model.eval()
     tokenizer = AutoTokenizer.from_pretrained(modelname, return_tensors="pt")
     data_collator = DataCollatorForNI(
@@ -110,7 +110,7 @@ if __name__ == "__main__":
         add_explanation=args.add_explanation,
         text_only=True
     )
-    print('hi')
+    
     os.makedirs(args.output_dir, exist_ok=True)
 
     # create attention folder
@@ -143,7 +143,7 @@ if __name__ == "__main__":
                     response = existing_requests[example["opt_input"]]
                 else:
                     tok_input = tokenizer(example["opt_input"], return_tensors="pt")
-                    tok_input_ids = tok_input.input_ids.to("cuda")
+                    tok_input_ids = tok_input.input_ids #.to("cuda")
                     output = model.generate(tok_input_ids, max_length=len(tok_input.input_ids[0])+args.max_target_length, return_dict_in_generate=True, output_attentions=True)
                     generate_ids = output[0]
                     attentions = output[1]

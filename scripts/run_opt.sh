@@ -1,7 +1,7 @@
 data_dir=data/splits/default
 task_dir=data/tasks
 output_dir=output/opt-125m/definition-before
-max_num_instances_per_eval_task=100
+max_num_instances_per_eval_task=10
 modelname=facebook/opt-125m
 
 echo "instruction + 2 positive examples"
