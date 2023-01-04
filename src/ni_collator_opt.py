@@ -105,7 +105,7 @@ class DataCollatorForNI:
             if self.corruption=='instr-randomwords':
                 len_def = len(self.tokenizer(definition)['input_ids'])
                 randomwords_def_ids = self.tokenizer(self.randomwords)['input_ids'][:len_def]
-                randomwords_def = self.tokenizer.decode(randomwords_def_ids)
+                randomwords_def = self.tokenizer.decode(randomwords_def_ids, skip_special_tokens=True)
                 definition = randomwords_def
                 if not definition[-1] in string.punctuation:
                     definition += "."
@@ -114,8 +114,8 @@ class DataCollatorForNI:
             
             if self.corruption=='instr-frequentwords':
                 len_def = len(self.tokenizer(definition)['input_ids'])
-                frequentwords_def_ids = self.tokenizer(self.randomwords)['input_ids'][:len_def]
-                frequentwords_def = self.tokenizer.decode(frequentwords_def_ids)
+                frequentwords_def_ids = self.tokenizer(self.frequentwords)['input_ids'][:len_def]
+                frequentwords_def = self.tokenizer.decode(frequentwords_def_ids, skip_special_tokens=True)
                 definition = frequentwords_def
                 if not definition[-1] in string.punctuation:
                     definition += "."

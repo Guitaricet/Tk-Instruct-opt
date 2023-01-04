@@ -4,7 +4,7 @@ max_num_instances_per_eval_task=2
 
 modelname=facebook/opt-125m
 modelfolder=opt-125m
-corruption=instr-frequentwords
+corruption=instr-randomwords
 
 
 output_dir=output/default/$modelfolder/$corruption
