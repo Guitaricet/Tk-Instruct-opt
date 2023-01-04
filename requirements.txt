@@ -12,3 +12,5 @@ sentencepiece==0.1.96
 bitsandbytes
 #git+https://github.com/NamrataRShivagunde/transformers.git@get-normattentions#egg=transformers
 accelerate
+english_words
+safetensors

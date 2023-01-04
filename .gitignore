@@ -1,6 +1,7 @@
 venv-tk/
 attentions/
-output/opt-125m
+output/default
+archive/
 # data
 data/
 beaker_configs/ni_*.yaml

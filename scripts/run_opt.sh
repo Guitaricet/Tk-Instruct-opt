@@ -1,16 +1,22 @@
 data_dir=data/splits/default
 task_dir=data/tasks
-output_dir=output/opt-30b/definition-before
-max_num_instances_per_eval_task=100
-modelname=facebook/opt-30b
+max_num_instances_per_eval_task=2
 
-echo "instruction + 2 positive examples"
+modelname=facebook/opt-125m
+modelfolder=opt-125m
+corruption=instr-placement-before-ex
+
+output_dir=output/default/$modelfolder/$corruption
+
+echo "instruction + 4 positive examples"
 
 python src/run-opt.py \
     --data_dir $data_dir \
     --task_dir $task_dir \
+    --modelname $modelname \
+    --corruption $corruption \
     --overwrite_cache \
-    --max_num_instances_per_task 100 \
+    --max_num_instances_per_task 2 \
     --max_num_instances_per_eval_task ${max_num_instances_per_eval_task} \
     --add_task_definition True \
     --num_pos_examples 2 \
@@ -18,8 +24,9 @@ python src/run-opt.py \
     --add_explanation False \
     --max_source_length 1024 \
     --max_target_length 5 \
-    --output_dir ${output_dir}/default/opt
+    --output_dir ${output_dir}
     
-python src/compute_metrics.py --predictions ${output_dir}/default/opt/predicted_examples.jsonl --track default --compute_per_category_metrics --compute_per_task_metrics
+python src/compute_metrics.py --predictions ${output_dir}/default/predicted_examples_batch.jsonl --track default --compute_per_category_metrics --compute_per_task_metrics
 
 # rm -rf /home/hf_cache/datasets_cache/natural_instructions/
+# https://github.com/Guitaricet/llm_vis
