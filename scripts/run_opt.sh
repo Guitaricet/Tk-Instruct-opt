@@ -19,7 +19,7 @@ python src/run-opt.py \
     --max_num_instances_per_task 2 \
     --max_num_instances_per_eval_task ${max_num_instances_per_eval_task} \
     --add_task_definition True \
-    --num_pos_examples 2 \
+    --num_pos_examples 4 \
     --num_neg_examples 0 \
     --add_explanation False \
     --max_source_length 1024 \
