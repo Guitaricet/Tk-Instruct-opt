@@ -4,7 +4,8 @@ max_num_instances_per_eval_task=2
 
 modelname=facebook/opt-125m
 modelfolder=opt-125m
-corruption=instr-placement-before-ex
+corruption=instr-frequentwords
+
 
 output_dir=output/default/$modelfolder/$corruption
 
@@ -26,7 +27,7 @@ python src/run-opt.py \
     --max_target_length 5 \
     --output_dir ${output_dir}
     
-python src/compute_metrics.py --predictions ${output_dir}/default/predicted_examples_batch.jsonl --track default --compute_per_category_metrics --compute_per_task_metrics
+python src/compute_metrics.py --predictions ${output_dir}/predicted_examples.jsonl --track default --compute_per_category_metrics --compute_per_task_metrics
 
 # rm -rf /home/hf_cache/datasets_cache/natural_instructions/
 # https://github.com/Guitaricet/llm_vis

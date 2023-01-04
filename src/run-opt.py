@@ -270,14 +270,15 @@ if __name__ == "__main__":
 
     if device=="cpu": # to test the code on local system
         model = AutoModelForCausalLM.from_pretrained(modelname)
-    else:
+    elif modelname == "facebook/opt-30b":
         model = AutoModelForCausalLM.from_pretrained(modelname, device_map=device_map, load_in_8bit=True)
+    else:
+        model = AutoModelForCausalLM.from_pretrained(modelname, device_map="auto", load_in_8bit=True)
+
     model.eval()
-    
     
     randomwords = None
     frequentwords = None
-
     # create a random word sentence for this corruption
     if args.corruption == 'instr-randomwords' or args.corruption == 'label-randomwords':
         randomwords = []
@@ -290,7 +291,7 @@ if __name__ == "__main__":
     # create a frequent word sentence for this corruption
     if args.corruption == 'instr-frequentwords':
         frequentwords = []
-        frequent_words_file = open('src/dataforcorruptions/randomwords.txt','r')
+        frequent_words_file = open('src/dataforcorruptions/frequentwords.txt','r')
         raw_lines = frequent_words_file.readlines()
         for i in range(200):    # create a sentence with 200 random words 
             frequentwords.append(raw_lines[i].strip('\n'))
@@ -324,7 +325,7 @@ if __name__ == "__main__":
     eval_dataloader = torch.utils.data.DataLoader(raw_datasets["test"], batch_size=4, collate_fn=data_collator)
     # batch evaluation loop
     with torch.no_grad():
-        with open(os.path.join(args.output_dir, "predicted_examples_batch.jsonl"), "w") as fout:
+        with open(os.path.join(args.output_dir, "predicted_examples.jsonl"), "w") as fout:
             for i, batch in enumerate(tqdm(eval_dataloader)):
                 print(batch)
                 for j in range(len(batch['labels'])):
@@ -364,8 +365,9 @@ if __name__ == "__main__":
                     fout.write(json.dumps(complete_dict) + "\n")
                 
                     # save attentions
+                    # outputs[1] is a tuple of lenght of max_new_tokens, outputs[1][0] which the attention heads for generating first new token
                     attention_heads = torch.stack(outputs[1][0])  # shape (num_layers, batch_size, heads, seq_len, seq_len)
-                    attention_heads = attention_heads[:,k,:,:,:] # batch_size is 1 , shape (num_layers, heads, seq_len, seq_len)
+                    attention_heads = attention_heads[:,k,:,:,:] # to make batch_size is 1, shape (num_layers, heads, seq_len, seq_len)
                     attention_heads = attention_heads.detach().cpu().numpy()
                     # attention_heads = attention_heads.squeeze(1)  #  (num_layers, heads, seq_len, seq_len)
 
@@ -380,17 +382,13 @@ if __name__ == "__main__":
                         "input_id" : batch['id'][k],
                         "input_text": batch['inputs'][k],
                     }
-                    print(safetensors_metadata)
-
                     n_params = sum(p.numel() for p in model.parameters()) / 1e9
                     prefix = f"{n_params:.2f}B_"
                     model_name_for_save = prefix + args.modelname.split('/')[-1]
                     # task_name_for_save = batch['Task'][k].split('_')[0]
                     # model_name_for_save = prefix + args.modelname.replace("/", "_")
                     attention_heads_path = "AH_" + model_name_for_save + "_" + args.corruption+ "_" + batch['id'][k] + ".safetensors" # AH stands for attention heads
-                    print(attention_heads_path)
-                    print(args.output_dir + "attentions" + "/" + attention_heads_path)
-
+                
                     save_file(
                         tensor_dict=attention_heads_artifact,
                         filename=args.output_dir + "/" + "attentions" + "/" + attention_heads_path,
