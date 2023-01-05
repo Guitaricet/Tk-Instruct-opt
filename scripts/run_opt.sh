@@ -30,4 +30,4 @@ python src/compute_metrics.py --predictions ${output_dir}/predicted_examples.jso
 
 # rm -rf /home/hf_cache/datasets_cache/natural_instructions/
 # https://github.com/Guitaricet/llm_vis
-# python src/compute_metrics.py --predictions output/default/opt-125m/empty-baseline1/predicted_examples.jsonl --track default --compute_per_category_metrics --compute_per_task_metrics
+# python src/compute_metrics.py --predictions output/default/opt-30b/empty-baseline1/predicted_examples.jsonl --track default --compute_per_category_metrics --compute_per_task_metrics
