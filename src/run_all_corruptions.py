@@ -21,6 +21,7 @@ b1_output_dir="output/default/{}/{}".format(modelfolder,b1_corruption)
 b2_output_dir="output/default/{}/{}".format(modelfolder,b2_corruption)
 
 #baseline1
+print("####### Running Baseline1 ##############")
 os.system('python src/run-opt.py \
     --data_dir {} \
     --task_dir {} \
@@ -38,6 +39,7 @@ os.system('python src/run-opt.py \
     --output_dir {}'.format(data_dir, task_dir, modelname, b1_corruption, max_num_instances_per_eval_task, b1_output_dir))
 
 #baseline2
+print("####### Running Baseline2 ##############")
 os.system('python src/run-opt.py \
     --data_dir {} \
     --task_dir {} \
@@ -56,19 +58,20 @@ os.system('python src/run-opt.py \
 
 
 
-corruptions_list = ['instr-placement-before-ex', 
-                    'instr-placement-after-ex',
-                    'instr-randomwords',
-                    'instr-frequentwords',
-                    'label-random-labelspace',
-                    'label-random-labelspace-half',
-                    'label-randomwords',
-                    'label-empty',
-                    'input-empty',
-                    'input-oodrandom']
+corruptions_list = ['instr-placement-before-ex']#, 
+                    # 'instr-placement-after-ex',
+                    # 'instr-randomwords',
+                    # 'instr-frequentwords',
+                    # 'label-random-labelspace',
+                    # 'label-random-labelspace-half',
+                    # 'label-randomwords',
+                    # 'label-empty',
+                    # 'input-empty',
+                    # 'input-oodrandom']
 
 for corrup in corruptions_list:
     output_dir="output/default/{}/{}".format(modelfolder,corrup)    
+    print("####### Running {} ##############".format(corruptions_list))
     os.system('python src/run-opt.py \
         --data_dir {} \
         --task_dir {} \
