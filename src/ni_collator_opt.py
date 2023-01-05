@@ -134,7 +134,6 @@ class DataCollatorForNI:
                         ood_corpus = open('src/dataforcorruptions/corpus.txt','r')
                         raw_lines = ood_corpus.readlines()
                         ood_input = random.choice(raw_lines)
-                        print(ood_input)
                         pos_example_str += f"Input: {ood_input}"
 
                     if not pos_example_str[-1] in string.punctuation:
