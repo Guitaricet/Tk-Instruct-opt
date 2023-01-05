@@ -23,22 +23,22 @@ b2_output_dir="output/default/{}/{}".format(modelfolder,b2_corruption)
 b3_output_dir="output/default/{}/{}".format(modelfolder,b3_corruption)
 
 #baseline1
-print("####### Running Baseline1 ##############")
-os.system('python src/run-opt.py \
-    --data_dir {} \
-    --task_dir {} \
-    --modelname {} \
-    --corruption {} \
-    --overwrite_cache \
-    --max_num_instances_per_task 2 \
-    --max_num_instances_per_eval_task {} \
-    --add_task_definition False \
-    --num_pos_examples 0 \
-    --num_neg_examples 0 \
-    --add_explanation False \
-    --max_source_length 1024 \
-    --max_target_length 5 \
-    --output_dir {}'.format(data_dir, task_dir, modelname, b1_corruption, max_num_instances_per_eval_task, b1_output_dir))
+# print("####### Running Baseline1 ##############")
+# os.system('python src/run-opt.py \
+#     --data_dir {} \
+#     --task_dir {} \
+#     --modelname {} \
+#     --corruption {} \
+#     --overwrite_cache \
+#     --max_num_instances_per_task 2 \
+#     --max_num_instances_per_eval_task {} \
+#     --add_task_definition False \
+#     --num_pos_examples 0 \
+#     --num_neg_examples 0 \
+#     --add_explanation False \
+#     --max_source_length 1024 \
+#     --max_target_length 5 \
+#     --output_dir {}'.format(data_dir, task_dir, modelname, b1_corruption, max_num_instances_per_eval_task, b1_output_dir))
 
 # baseline2
 print("####### Running Baseline2 ##############")
@@ -58,23 +58,23 @@ os.system('python src/run-opt.py \
     --max_target_length 5 \
     --output_dir {}'.format(data_dir, task_dir, modelname, b2_corruption, max_num_instances_per_eval_task, b2_output_dir))
 
-# baseline3
-print("####### Running Baseline3 ##############")
-os.system('python src/run-opt.py \
-    --data_dir {} \
-    --task_dir {} \
-    --modelname {} \
-    --corruption {} \
-    --overwrite_cache \
-    --max_num_instances_per_task 2 \
-    --max_num_instances_per_eval_task {} \
-    --add_task_definition True \
-    --num_pos_examples 0 \
-    --num_neg_examples 0 \
-    --add_explanation False \
-    --max_source_length 1024 \
-    --max_target_length 5 \
-    --output_dir {}'.format(data_dir, task_dir, modelname, b3_corruption, max_num_instances_per_eval_task, b3_output_dir))
+# # baseline3
+# print("####### Running Baseline3 ##############")
+# os.system('python src/run-opt.py \
+#     --data_dir {} \
+#     --task_dir {} \
+#     --modelname {} \
+#     --corruption {} \
+#     --overwrite_cache \
+#     --max_num_instances_per_task 2 \
+#     --max_num_instances_per_eval_task {} \
+#     --add_task_definition True \
+#     --num_pos_examples 0 \
+#     --num_neg_examples 0 \
+#     --add_explanation False \
+#     --max_source_length 1024 \
+#     --max_target_length 5 \
+#     --output_dir {}'.format(data_dir, task_dir, modelname, b3_corruption, max_num_instances_per_eval_task, b3_output_dir))
 
 
 corruptions_list = ['label-empty',
