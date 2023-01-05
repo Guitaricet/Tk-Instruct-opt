@@ -133,8 +133,8 @@ class DataCollatorForNI:
                     else:
                         ood_corpus = open('src/dataforcorruptions/corpus.txt','r')
                         raw_lines = ood_corpus.readlines()
-                        random.seed(1)
                         ood_input = random.choice(raw_lines)
+                        print(ood_input)
                         pos_example_str += f"Input: {ood_input}"
 
                     if not pos_example_str[-1] in string.punctuation:
@@ -148,10 +148,10 @@ class DataCollatorForNI:
                         correct_output = pos_example['output']
                         list_of_labels = dataset_labels.LABELS[instance['Task']].copy()
                         list_of_labels.remove(correct_output)
+                
                         if len(list_of_labels)==1:
                             pos_example_output = f" Output: {list_of_labels[0]}"
                         else:
-                            random.seed(1)
                             pos_example_output = f" Output: {random.choice(list_of_labels)}"
 
                         if self.corruption == 'label-random-labelspace-half' and idx%2==0:
@@ -160,7 +160,6 @@ class DataCollatorForNI:
                     if self.corruption == 'label-randomwords' and instance['Task'] in dataset_labels.LABELS:
                         len_label_space = len(dataset_labels.LABELS[instance['Task']])
                         randomwords_label_space = self.randomwords.split(' ')[:len_label_space]
-                        random.seed(1)
                         pos_example_output = f" Output: {random.choice(randomwords_label_space)}"
 
                     pos_example_str += pos_example_output

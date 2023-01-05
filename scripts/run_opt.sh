@@ -4,8 +4,7 @@ max_num_instances_per_eval_task=2
 
 modelname=facebook/opt-125m
 modelfolder=opt-125m
-corruption=instr-randomwords
-
+corruption=label-randomwords
 
 output_dir=output/default/$modelfolder/$corruption
 
@@ -24,7 +23,7 @@ python src/run-opt.py \
     --num_neg_examples 0 \
     --add_explanation False \
     --max_source_length 1024 \
-    --max_target_length 5 \
+    --max_target_length 8 \
     --output_dir ${output_dir}
     
 python src/compute_metrics.py --predictions ${output_dir}/predicted_examples.jsonl --track default --compute_per_category_metrics --compute_per_task_metrics
