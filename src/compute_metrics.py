@@ -184,9 +184,7 @@ if __name__ == "__main__":
         print("======== Metrics per task ========")
         results_by_task = compute_grouped_metrics(predictions, references, tasks, xlingual=args.track=="xlingual")
         for task in sorted(list(set(tasks))):
-            print(task)
             category = task_category[task]
-            print(category)
             metric = category_metrics[category]
             print(task, results_by_task[f"{metric}_for_{task}"])
         print()
