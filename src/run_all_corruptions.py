@@ -53,21 +53,21 @@ os.system('python src/run-opt.py \
     --num_neg_examples 0 \
     --add_explanation False \
     --max_source_length 1024 \
-    --max_target_length 5 \
+    --max_target_length 10 \
     --output_dir {}'.format(data_dir, task_dir, modelname, b2_corruption, max_num_instances_per_eval_task, b2_output_dir))
 
 
 
-corruptions_list = ['instr-placement-before-ex']#, 
-                    # 'instr-placement-after-ex',
-                    # 'instr-randomwords',
-                    # 'instr-frequentwords',
-                    # 'label-random-labelspace',
-                    # 'label-random-labelspace-half',
-                    # 'label-randomwords',
-                    # 'label-empty',
-                    # 'input-empty',
-                    # 'input-oodrandom']
+corruptions_list = ['instr-placement-before-ex', 
+                    'instr-placement-after-ex',
+                    'instr-randomwords',
+                    'instr-frequentwords',
+                    'label-random-labelspace',
+                    'label-random-labelspace-half',
+                    'label-randomwords',
+                    'label-empty',
+                    'input-empty',
+                    'input-oodrandom']
 
 for corrup in corruptions_list:
     output_dir="output/default/{}/{}".format(modelfolder,corrup)    
