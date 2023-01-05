@@ -328,36 +328,36 @@ if __name__ == "__main__":
                                     }
                     fout.write(json.dumps(complete_dict) + "\n")
                 
-                    # save attentions
-                    # outputs[1] is a tuple of lenght of max_new_tokens, outputs[1][0] which the attention heads for generating first new token
-                    attention_heads = torch.stack(outputs[1][0])  # shape (num_layers, batch_size, heads, seq_len, seq_len)
-                    attention_heads = attention_heads[:,k,:,:,:] # to make batch_size is 1, shape (num_layers, heads, seq_len, seq_len)
-                    attention_heads = attention_heads.detach().cpu().numpy()
-                    # attention_heads = attention_heads.squeeze(1)  #  (num_layers, heads, seq_len, seq_len)
+                    # # save attentions
+                    # # outputs[1] is a tuple of lenght of max_new_tokens, outputs[1][0] which the attention heads for generating first new token
+                    # attention_heads = torch.stack(outputs[1][0])  # shape (num_layers, batch_size, heads, seq_len, seq_len)
+                    # attention_heads = attention_heads[:,k,:,:,:] # to make batch_size is 1, shape (num_layers, heads, seq_len, seq_len)
+                    # attention_heads = attention_heads.detach().cpu().numpy()
+                    # # attention_heads = attention_heads.squeeze(1)  #  (num_layers, heads, seq_len, seq_len)
 
-                    # how to save
-                    attention_heads_artifact = {
-                        "attention_heads": attention_heads,  # (layers, heads, seq, seq)
-                    }
-                    safetensors_metadata = {
-                        "model_name": args.modelname,
-                        "corruption": args.corruption,
-                        "task_id" : batch['Task'][k],
-                        "input_id" : batch['id'][k],
-                        "input_text": batch['inputs'][k],
-                    }
-                    n_params = sum(p.numel() for p in model.parameters()) / 1e9
-                    prefix = f"{n_params:.2f}B_"
-                    model_name_for_save = prefix + args.modelname.split('/')[-1]
-                    # task_name_for_save = batch['Task'][k].split('_')[0]
-                    # model_name_for_save = prefix + args.modelname.replace("/", "_")
-                    attention_heads_path = "AH_" + model_name_for_save + "_" + args.corruption+ "_" + batch['id'][k] + ".safetensors" # AH stands for attention heads
+                    # # how to save
+                    # attention_heads_artifact = {
+                    #     "attention_heads": attention_heads,  # (layers, heads, seq, seq)
+                    # }
+                    # safetensors_metadata = {
+                    #     "model_name": args.modelname,
+                    #     "corruption": args.corruption,
+                    #     "task_id" : batch['Task'][k],
+                    #     "input_id" : batch['id'][k],
+                    #     "input_text": batch['inputs'][k],
+                    # }
+                    # n_params = sum(p.numel() for p in model.parameters()) / 1e9
+                    # prefix = f"{n_params:.2f}B_"
+                    # model_name_for_save = prefix + args.modelname.split('/')[-1]
+                    # # task_name_for_save = batch['Task'][k].split('_')[0]
+                    # # model_name_for_save = prefix + args.modelname.replace("/", "_")
+                    # attention_heads_path = "AH_" + model_name_for_save + "_" + args.corruption+ "_" + batch['id'][k] + ".safetensors" # AH stands for attention heads
                 
-                    save_file(
-                        tensor_dict=attention_heads_artifact,
-                        filename=args.output_dir + "/" + "attentions" + "/" + attention_heads_path,
-                        metadata=safetensors_metadata,
-                    )
+                    # save_file(
+                    #     tensor_dict=attention_heads_artifact,
+                    #     filename=args.output_dir + "/" + "attentions" + "/" + attention_heads_path,
+                    #     metadata=safetensors_metadata,
+                    # )
                     
                     
 
