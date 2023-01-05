@@ -13,43 +13,8 @@ from typing import Optional
 from safetensors.numpy import save_file
 
 
-# make it work for gpt2 and opt 
-# make it 4 shots + definition 
-# select 5 datasets (1)
-# make code to add corruptions one by one - total- 10-12 corruptions (15)
-# design a folder structure to save predictions and save attentions (1)
-# clean the code (2)
-# TODO run one dataset and ask vlad if things are correct (3)
-# TODO run for 5 datasets and give attentions this to vlad (5)
 # TODO add a script to add more in-context examples to tasks
-
-# Corruptions
-# empty-baseline1 -  x . 
-                    # set --add_task_definition False \
-                    #     --num_pos_examples 0 \
-                    #     --num_neg_examples 0 \
-                    #     --add_explanation False \
-
-# examples-baseline2 -  xy xy xy xy | x
-                    # set --add_task_definition False \
-                    #     --num_pos_examples 4 \
-                    #     --num_neg_examples 0 \
-                    #     --add_explanation False \
-
-# 1) instr-placement-before-ex -   I | xy xy xy xy | x
-# 2) instr-placement-after-ex  -       xy xy xy xy | I | x
-# 3) instr-randomwords        -   I(random) | xy xy xy xy | x 
-# 4) instr-frequentwords      -   I(freq) | xy xy xy xy | x 
-
-# Rethinking corruptions 
-# 5) label-random-labelspace        -   I | xy(ran) xy(ran) xy(ran) xy(ran) | x  # works only for datasets where there is label options and all are incorect labels
-# 6) label-random-labelspace-half   -   I | xy(ran) xy(ran) xy xy | x  # works only for datasets where there is label options, every other label is incorrect
-# 7) label-randomwords              -   I | xy(ran) xy(ran) xy(ran) xy(ran) | x # label space is created with random words and y i s randomly chosen from this label space
-# 8) label-empty                    -   I | x x x x | x   # Input:x
-# 9) input-empty                   -   I | y y y y (number of classes) | x  # Output:y
-# 10) input-oodrandom                -   I | x(oodran)y x(oodran)y x(oodran)y x(oodran)y | x \TODO get the common crawl corpus
-
-# for all these no explanation and negative examples are added
+# TODO if prediction already exists then not compute it again
 
 @dataclass
 class DataTrainingArguments:

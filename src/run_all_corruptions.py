@@ -1,10 +1,18 @@
 import os
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("modelname", default=None, type=str)
+parser.add_argument("--num_instances", default=2, type=int)
+
+
+args = parser.parse_args()
 
 data_dir="data/splits/default"
 task_dir="data/tasks"
-max_num_instances_per_eval_task=2
+max_num_instances_per_eval_task=args.num_instances
 
-modelname="facebook/opt-125m"
+modelname="facebook/opt-30b"
 modelfolder=modelname.split('/')[-1]
 b1_corruption="empty-baseline1"
 b2_corruption="empty-baseline2"
@@ -26,7 +34,7 @@ os.system('python src/run-opt.py \
     --num_neg_examples 0 \
     --add_explanation False \
     --max_source_length 1024 \
-    --max_target_length 8 \
+    --max_target_length 5 \
     --output_dir {}'.format(data_dir, task_dir, modelname, b1_corruption, max_num_instances_per_eval_task, b1_output_dir))
 
 #baseline2
@@ -43,7 +51,7 @@ os.system('python src/run-opt.py \
     --num_neg_examples 0 \
     --add_explanation False \
     --max_source_length 1024 \
-    --max_target_length 8 \
+    --max_target_length 5 \
     --output_dir {}'.format(data_dir, task_dir, modelname, b2_corruption, max_num_instances_per_eval_task, b2_output_dir))
 
 
@@ -60,7 +68,6 @@ corruptions_list = ['instr-placement-before-ex',
                     'input-oodrandom']
 
 for corrup in corruptions_list:
-#instr-placement-before-ex 
     output_dir="output/default/{}/{}".format(modelfolder,corrup)    
     os.system('python src/run-opt.py \
         --data_dir {} \
@@ -75,5 +82,5 @@ for corrup in corruptions_list:
         --num_neg_examples 0 \
         --add_explanation False \
         --max_source_length 1024 \
-        --max_target_length 8 \
+        --max_target_length 5\
         --output_dir {}'.format(data_dir, task_dir, modelname, corrup, max_num_instances_per_eval_task, output_dir))

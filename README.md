@@ -73,3 +73,15 @@ Other files and folders
  - `compute_metrics.py` has all metric computation methods
  - `dataset_labels.py` has label space for datasets
  - `ni_collator_opt.py` is the modified version of `ni_collator.py` from Super-NaturalInstructions and includes all mentioned corruptions  
+
+
+
+
+## test tasks
+task1344_glue_entailment_classification
+task1645_medical_question_pair_dataset_text_classification
+task843_financial_phrasebank_classification
+task116_com2sense_commonsense_reasoning
+task512_twitter_emotion_classification
+task1564_triviaqa_answer_generation 
+task835_mathdataset_answer_generation
