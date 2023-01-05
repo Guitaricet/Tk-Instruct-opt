@@ -287,7 +287,7 @@ if __name__ == "__main__":
     with open(os.path.join(args.output_dir, "opt_run_config.json"), "w") as fout:
         json.dump(args.__dict__, fout)
 
-    eval_dataloader = torch.utils.data.DataLoader(raw_datasets["test"], batch_size=2, collate_fn=data_collator)
+    eval_dataloader = torch.utils.data.DataLoader(raw_datasets["test"], batch_size=4, collate_fn=data_collator)
     # batch evaluation loop
     with torch.no_grad():
         with open(os.path.join(args.output_dir, "predicted_examples.jsonl"), "w") as fout:
