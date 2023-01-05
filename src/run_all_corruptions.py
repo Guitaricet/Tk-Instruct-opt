@@ -58,15 +58,16 @@ b2_output_dir="output/default/{}/{}".format(modelfolder,b2_corruption)
 
 
 
-corruptions_list = ['instr-placement-before-ex']
+corruptions_list = ['label-empty',
+                    'input-empty']
+# ['instr-placement-before-ex']
                     # 'instr-placement-after-ex',
                     # 'instr-randomwords',
                     # 'instr-frequentwords',
                     # 'label-random-labelspace',
                     # 'label-random-labelspace-half',
                     # 'label-randomwords',
-                    # 'label-empty',
-                    # 'input-empty',
+                    
                     # 'input-oodrandom']
 
 for corrup in corruptions_list:
