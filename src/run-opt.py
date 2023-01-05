@@ -292,7 +292,6 @@ if __name__ == "__main__":
     with torch.no_grad():
         with open(os.path.join(args.output_dir, "predicted_examples.jsonl"), "w") as fout:
             for i, batch in enumerate(tqdm(eval_dataloader)):
-                print(batch)
                 for j in range(len(batch['labels'])):
                     # strip the whitespace in input and target
                     batch['inputs'][j] = batch['inputs'][j].strip()
