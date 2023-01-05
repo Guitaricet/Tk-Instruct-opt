@@ -159,7 +159,8 @@ if __name__ == "__main__":
         ("Question Answering", "rougeL"),
         ("Text Categorization", "rougeL"),
         ("Commonsense Classification", "exact_match"),
-        ("Sentiment Analysis", "exact_match")
+        ("Sentiment Analysis", "exact_match"),
+        ("Text Matching", "rougeL")
     ]
     category_metrics = {"_".join(category.lower().split()): metric for category, metric in category_metrics}
 
