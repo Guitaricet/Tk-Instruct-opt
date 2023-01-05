@@ -12,7 +12,7 @@ data_dir="data/splits/default"
 task_dir="data/tasks"
 max_num_instances_per_eval_task=args.num_instances
 
-modelname="facebook/opt-30b"
+modelname=args.modelname
 modelfolder=modelname.split('/')[-1]
 b1_corruption="empty-baseline1"
 b2_corruption="empty-baseline2"
