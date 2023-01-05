@@ -300,8 +300,8 @@ if __name__ == "__main__":
                 tok_input = tokenizer(batch['inputs'], return_tensors="pt", padding=True)
 
                 # outputs [generated_ids, attentions]
-                outputs = model.generate(input_ids=tok_input['input_ids'], # https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/6
-                                        attention_mask=tok_input['attention_mask'],
+                outputs = model.generate(input_ids=tok_input['input_ids'].to(device), # https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/6
+                                        attention_mask=tok_input['attention_mask'].to(device),
                                         max_new_tokens=args.max_target_length, 
                                         return_dict_in_generate=True,
                                         output_attentions=True)
