@@ -90,7 +90,10 @@ class DataCollatorForNI:
                     break
             
             # Combine all elements
-            source = definition + "".join(pos_examples) + task_input 
+            if self.corruption == 'instr-placement-after-ex':
+                source =  "".join(pos_examples) + definition + task_input 
+            else:    
+                source = definition + "".join(pos_examples) + task_input 
 
             tokenized_source = self.tokenizer(source)["input_ids"]
             if len(tokenized_source) <= self.max_source_length:
@@ -102,7 +105,4 @@ class DataCollatorForNI:
        
             model_inputs = {"id":id, "Task":task, "Categories":categories ,"Reasoning":reasoning, "inputs": sources, "labels":labels}
 
-            
-           
-          
         return model_inputs

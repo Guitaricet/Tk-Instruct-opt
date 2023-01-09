@@ -272,18 +272,20 @@ if __name__ == "__main__":
         corruption=args.corruption,     
     )
     
-    # create output directory
-    os.makedirs(args.output_dir, exist_ok=True)
-
-    # # Save the configuration of evaluation
-    # with open(os.path.join(args.output_dir, "opt_run_config.json"), "w") as fout:
-    #     json.dump(args.__dict__, fout)
-
+   
     eval_dataloader = torch.utils.data.DataLoader(raw_datasets['test'], batch_size=args.batch_size, collate_fn=data_collator)
+
+    # create output directory
+    output_dir = args.output_dir + '/' + modelname.split('/')[-1] + '/'
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Save the configuration of evaluation
+    with open(os.path.join(output_dir, "opt_run_config.json"), "w") as fout:
+        json.dump(args.__dict__, fout)
     
     # batch evaluation loop
     with torch.no_grad():
-        with open(os.path.join(args.output_dir, "predicted_examples.jsonl"), "w") as fout:
+        with open(os.path.join(output_dir, "predicted_examples.jsonl"), "w") as fout:
             for i, batch in enumerate(tqdm(eval_dataloader)):
                 
                 for j in range(len(batch['labels'])):
@@ -300,15 +302,13 @@ if __name__ == "__main__":
                 # outputs [generated_ids, attentions]
                 outputs = model.generate(input_ids=tok_input['input_ids'].to(device), # https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/6
                                         attention_mask=tok_input['attention_mask'].to(device),
-                                        max_new_tokens=args.max_target_length, 
-                                        return_dict_in_generate=True,
-                                        output_attentions=True)
+                                        max_new_tokens=args.max_target_length)
                 
                 # save predictions
                 for k in range(len(batch['labels'])):
                     complete_dict = {}
         
-                    response = tokenizer.decode(outputs[0][k][-args.max_target_length:], 
+                    response = tokenizer.decode(outputs[k][-args.max_target_length:], 
                                                 skip_special_tokens=True, 
                                                 clean_up_tokenization_spaces=False) # decode target tokens only. input not considered.
                                                 #TODO what does clean_up_tokenization_spaces do?

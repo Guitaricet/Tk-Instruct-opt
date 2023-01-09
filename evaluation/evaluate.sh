@@ -1,6 +1,6 @@
 task_dir=data-generator/processed-tasks
 corruption=baseline
-output_dir=evaluation/OUTPUT/
+output_dir=output
 
 echo "###############  Running evaluation  #########################"
 
