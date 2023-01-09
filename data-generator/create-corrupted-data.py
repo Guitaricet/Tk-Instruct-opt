@@ -37,7 +37,6 @@ def process_task1344_glue_entailment_classification(data, add_inline_instruction
 
 
 def replace_wth_randomwords(text, tokenizer, start_idx, end_idx):
-    print(text)
     text = text.split()
     text_tok_len = len(tokenizer(text)['input_ids']) # number of tokens
 
@@ -88,7 +87,6 @@ def main():
         if filename.endswith("baseline.json"):
 
             ############### OPEN BASELINE FILE AND ADD CORRUPTIONS AND DUMP INTO JSON FILE FOR EACH CORRUPTION AND FOR EACH TASK #############
-            print(filename)
             
             ############### instr_randomwords ##################
             # Open the baseline JSON file
@@ -249,7 +247,7 @@ def main():
 
                 baseline_data["corruption_id"] = "input_ood"
                
-                ood_corpus = open('src/dataforcorruptions/corpus.txt','r')
+                ood_corpus = open('data-generator/data-for-corruptions/corpus.txt','r')
                 raw_lines = ood_corpus.readlines()
                 ood_sent = []
                 for i in range(len(raw_lines)):

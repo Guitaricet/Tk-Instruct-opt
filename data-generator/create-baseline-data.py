@@ -65,8 +65,8 @@ def main():
                 original_data = json.load(f)
 
             ############### BASELINE DATA ##################
-            original_data["corruption_id"] = "baseline"  # with inline instruction
-
+            original_data["corruption_id"] = "baseline".split()  # with inline instruction
+            print(original_data["corruption_id"])
             
             ############## creating task1344_glue_entailment_classification_baseline.json  ###########
             if filename == "task1344_glue_entailment_classification.json":

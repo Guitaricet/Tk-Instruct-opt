@@ -164,10 +164,13 @@ class OPTArguments(DataTrainingArguments):
         default="facebook/opt-125m", metadata={"help": "model name"}
      )
     corruption: str = field(
-        default="inst-placement-before-ex", metadata={"help": "model name"}
+        default="baseline", metadata={"help": "corruption name"}
     )
     batch_size: int = field(
         default=4, metadata={"help": "batch size for evaluation"}
+    )
+    taskname: str = field(
+        default=None, metadata={"help": "task name"}
     )
     
 
