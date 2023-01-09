@@ -291,8 +291,7 @@ if __name__ == "__main__":
                     print("################### "+ args.corruption+" #####################")
                     print(batch['inputs'][j])
                     
-                
-                
+            
                 tok_input = tokenizer(batch['inputs'], return_tensors="pt", padding=True)
 
                 # outputs [generated_ids, attentions]
