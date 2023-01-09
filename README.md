@@ -69,7 +69,7 @@ Other files and folders
 - `dataforcorruptions` includes
     -  list of random english words in `randomwords.txt`
     -  list of wikipedia frequent words in `frequentwords.txt`
-    -  corpus for ood inputs in `corpus.txt`
+    -  corpus for ood inputs in `corpus.txt`- created using randomly chooisng sentences from c4. shuffled from buffer size 100000. for replacing the input, we choose sequentiallay from corpus.txt
  - `compute_metrics.py` has all metric computation methods
  - `dataset_labels.py` has label space for datasets
  - `ni_collator_opt.py` is the modified version of `ni_collator.py` from Super-NaturalInstructions and includes all mentioned corruptions  
@@ -85,3 +85,4 @@ task116_com2sense_commonsense_reasoning
 task512_twitter_emotion_classification
 task1564_triviaqa_answer_generation 
 task835_mathdataset_answer_generation
+

@@ -3,6 +3,7 @@ attentions/
 output/default
 archive/
 opt-125m.zip
+archive2/
 # data
 data/
 beaker_configs/ni_*.yaml
