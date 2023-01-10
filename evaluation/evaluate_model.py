@@ -1,21 +1,82 @@
 import argparse
 import os
 import json
-import random
+from typing import Optional
+from dataclasses import dataclass, field
+
 import torch
 from tqdm import tqdm
-from data_collator import DataCollatorForNI
-
+from datasets import load_dataset
 from transformers import (
     HfArgumentParser,
     AutoModelForCausalLM,
     AutoTokenizer,
+    OPTForCausalLM,
 )
-from dataclasses import dataclass, field
-from typing import Optional
+from safetensors.numpy import save_file
 
-from datasets import load_dataset
+try:
+    from data_collator import DataCollatorForNI
+except:
+    from evaluation.data_collator import DataCollatorForNI
 
+torch.set_grad_enabled(False)
+
+
+OPT_30B_DEVICE_MAP = {
+    'model.decoder.embed_tokens': 0,
+    'model.decoder.embed_positions': 0,
+    'model.decoder.final_layer_norm': 0,
+    'model.decoder.layers.0': 0,
+    'model.decoder.layers.1': 0,
+    'model.decoder.layers.2': 0,
+    'model.decoder.layers.3': 0,
+    'model.decoder.layers.4': 0,
+    'model.decoder.layers.5': 0,
+    'model.decoder.layers.6': 0,
+    'model.decoder.layers.7': 0,
+    'model.decoder.layers.8': 0,
+    'model.decoder.layers.9': 0,
+    'model.decoder.layers.10': 0,
+    'model.decoder.layers.11': 0,
+    'model.decoder.layers.12': 0,
+    'model.decoder.layers.13': 0,
+    'model.decoder.layers.14': 0,
+    'model.decoder.layers.15': 0,
+    'model.decoder.layers.16': 0,
+    'model.decoder.layers.17': 0,
+    'model.decoder.layers.18': 0,
+    'model.decoder.layers.19': 0,
+    'model.decoder.layers.20': 0,
+    'model.decoder.layers.21': 0,
+    'model.decoder.layers.22': 0,
+    'model.decoder.layers.23': 0,
+    'model.decoder.layers.24': 1,
+    'model.decoder.layers.25': 1,
+    'model.decoder.layers.26': 1,
+    'model.decoder.layers.27': 1,
+    'model.decoder.layers.28': 1,
+    'model.decoder.layers.29': 1,
+    'model.decoder.layers.30': 1,
+    'model.decoder.layers.31': 1,
+    'model.decoder.layers.32': 1,
+    'model.decoder.layers.33': 1,
+    'model.decoder.layers.34': 1,
+    'model.decoder.layers.35': 1,
+    'model.decoder.layers.36': 1,
+    'model.decoder.layers.37': 1,
+    'model.decoder.layers.38': 1,
+    'model.decoder.layers.39': 1,
+    'model.decoder.layers.40': 1,
+    'model.decoder.layers.41': 1,
+    'model.decoder.layers.42': 1,
+    'model.decoder.layers.43': 1,
+    'model.decoder.layers.44': 1,
+    'model.decoder.layers.45': 1,
+    'model.decoder.layers.46': 1,
+    'model.decoder.layers.47': 1,
+    'lm_head': 1,
+}
 
 
 def get_args():
@@ -179,7 +240,7 @@ if __name__ == "__main__":
 
     parser = HfArgumentParser((OPTArguments,))
     args, = parser.parse_args_into_dataclasses()
-    
+
     # load the dataset (loads all files one after the other sequencially)
     raw_datasets = load_dataset(
         "evaluation/loaddataset.py", 
@@ -189,80 +250,25 @@ if __name__ == "__main__":
         corruption = args.corruption
     )
 
-
-    device_map = {
-    'model.decoder.embed_tokens': 0,
-    'model.decoder.embed_positions': 0,
-    'model.decoder.final_layer_norm': 0,
-    'model.decoder.layers.0': 0,
-    'model.decoder.layers.1': 0,
-    'model.decoder.layers.2': 0,
-    'model.decoder.layers.3': 0,
-    'model.decoder.layers.4': 0,
-    'model.decoder.layers.5': 0,
-    'model.decoder.layers.6': 0,
-    'model.decoder.layers.7': 0,
-    'model.decoder.layers.8': 0,
-    'model.decoder.layers.9': 0,
-    'model.decoder.layers.10': 0,
-    'model.decoder.layers.11': 0,
-    'model.decoder.layers.12': 0,
-    'model.decoder.layers.13': 0,
-    'model.decoder.layers.14': 0,
-    'model.decoder.layers.15': 0,
-    'model.decoder.layers.16': 0,
-    'model.decoder.layers.17': 0,
-    'model.decoder.layers.18': 0,
-    'model.decoder.layers.19': 0,
-    'model.decoder.layers.20': 0,
-    'model.decoder.layers.21': 0,
-    'model.decoder.layers.22': 0,
-    'model.decoder.layers.23': 0,
-    'model.decoder.layers.24': 1,
-    'model.decoder.layers.25': 1,
-    'model.decoder.layers.26': 1,
-    'model.decoder.layers.27': 1,
-    'model.decoder.layers.28': 1,
-    'model.decoder.layers.29': 1,
-    'model.decoder.layers.30': 1,
-    'model.decoder.layers.31': 1,
-    'model.decoder.layers.32': 1,
-    'model.decoder.layers.33': 1,
-    'model.decoder.layers.34': 1,
-    'model.decoder.layers.35': 1,
-    'model.decoder.layers.36': 1,
-    'model.decoder.layers.37': 1,
-    'model.decoder.layers.38': 1,
-    'model.decoder.layers.39': 1,
-    'model.decoder.layers.40': 1,
-    'model.decoder.layers.41': 1,
-    'model.decoder.layers.42': 1,
-    'model.decoder.layers.43': 1,
-    'model.decoder.layers.44': 1,
-    'model.decoder.layers.45': 1,
-    'model.decoder.layers.46': 1,
-    'model.decoder.layers.47': 1,
-    'lm_head': 1,
-    }
-    
-
     # load the tokenizer and model
     modelname = args.modelname
     tokenizer = AutoTokenizer.from_pretrained(modelname, return_tensors="pt")
     tokenizer.padding_side = "left"  # for batch inference
     tokenizer.pad_token = tokenizer.eos_token # to avoid an error
 
-    if device=="cpu": # to test the code on local system
+    if device == "cpu": # to test the code on local system
         model = AutoModelForCausalLM.from_pretrained(modelname)
     elif modelname == "facebook/opt-30b":
-        model = AutoModelForCausalLM.from_pretrained(modelname, device_map=device_map, load_in_8bit=True)
+        model = AutoModelForCausalLM.from_pretrained(modelname, device_map=OPT_30B_DEVICE_MAP, load_in_8bit=True)
     else:
         model = AutoModelForCausalLM.from_pretrained(modelname, device_map="auto", load_in_8bit=True)
 
+    model: OPTForCausalLM  # for type hints
     model.eval()
 
     # data collator
-    data_collator = DataCollatorForNI(tokenizer,
+    data_collator = DataCollatorForNI(
+        tokenizer,
         max_source_length=args.max_source_length,
         max_target_length=args.max_target_length,
         add_task_definition=args.add_task_definition,
@@ -271,18 +277,30 @@ if __name__ == "__main__":
         add_explanation=args.add_explanation,
         corruption=args.corruption,     
     )
-    
-   
-    eval_dataloader = torch.utils.data.DataLoader(raw_datasets['test'], batch_size=args.batch_size, collate_fn=data_collator)
+
+    eval_dataloader = torch.utils.data.DataLoader(
+        raw_datasets['test'],
+        batch_size=args.batch_size,
+        collate_fn=data_collator,
+        shuffle=False,
+    )
 
     # create output directory
-    output_dir = args.output_dir + '/' + modelname.split('/')[-1] + '/'
+    n_params = sum(p.numel() for p in model.parameters()) / 1e9
+    prefix = f"{n_params:.2f}B_"
+    model_name_for_save = prefix + modelname.split('/')[-1]
+
+    output_dir = args.output_dir + '/' + model_name_for_save + '/'
     os.makedirs(output_dir, exist_ok=True)
 
     # Save the configuration of evaluation
     with open(os.path.join(output_dir, "opt_run_config.json"), "w") as fout:
-        json.dump(args.__dict__, fout)
-    
+        json.dump(args.__dict__, fout, indent=4)
+
+    from collections import defaultdict
+    saved_correct_prediction_heads = defaultdict(lambda: False)
+    saved_incorrect_prediction_heads = defaultdict(lambda: False)
+
     # batch evaluation loop
     with torch.no_grad():
         with open(os.path.join(output_dir, "predicted_examples.jsonl"), "w") as fout:
@@ -292,40 +310,96 @@ if __name__ == "__main__":
                     # strip the whitespace in input and target
                     batch['inputs'][j] = batch['inputs'][j].strip()
                     batch['labels'][j] = batch['labels'][j].strip()
-                    print("################### "+ batch['Task'][j] +" #####################")
-                    print("################### "+ args.corruption+" #####################")
-                    print(batch['inputs'][j])
-                    
-            
+                    print("################### " + batch['Task'][j] + " #####################")
+                    print("################### " + args.corruption + " #####################")
+                    # print(batch['inputs'][j])
+
                 tok_input = tokenizer(batch['inputs'], return_tensors="pt", padding=True)
 
-                # outputs [generated_ids, attentions]
-                outputs = model.generate(input_ids=tok_input['input_ids'].to(device), # https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/6
-                                        attention_mask=tok_input['attention_mask'].to(device),
-                                        max_new_tokens=args.max_target_length)
-                
+                # outputs: generated ids
+                # can't add attentions for some reason, output_attentions=True doesn't do anything
+                outputs = model.generate(
+                    input_ids=tok_input['input_ids'].to(device), # https://discuss.huggingface.co/t/batch-generation-with-gpt2/1517/6
+                    attention_mask=tok_input['attention_mask'].to(device),
+                    max_new_tokens=args.max_target_length,
+                )
+
                 # save predictions
                 for k in range(len(batch['labels'])):
                     complete_dict = {}
-        
-                    response = tokenizer.decode(outputs[k][-args.max_target_length:], 
+
+                    n_input_tokens = len(tok_input['input_ids'][k])
+                    response_ids = outputs[k][n_input_tokens:] # remove input tokens from generated tokens
+                    response = tokenizer.decode(response_ids,
                                                 skip_special_tokens=True, 
                                                 clean_up_tokenization_spaces=False) # decode target tokens only. input not considered.
                                                 #TODO what does clean_up_tokenization_spaces do?
 
+                    full_generation = tokenizer.decode(
+                        outputs[k],
+                        skip_special_tokens=True,
+                    )
+
                     # Note: Following original paper, we cut the generated text at the first period, since the language model sometimes generates more than one sentences.
                     response = response.strip().split(".")[0]
-                    complete_dict = {'id': batch['id'][k], 
-                                      'Task': batch['Task'][k],
-                                      'Corruption' : args.corruption,
-                                      'Categories': batch['Categories'][k],
-                                      'Reasoning': batch['Reasoning'][k],
-                                      'Instance': {"input" : batch['inputs'][k], 
-                                                    "output" : [batch['labels'][k]]},
-                                      'Target': batch['labels'][k],
-                                      'Prediction': response
-                                    }
+                    complete_dict = {
+                        'id': batch['id'][k], 
+                        'Task': batch['Task'][k],
+                        'Corruption' : args.corruption,
+                        'Categories': batch['Categories'][k],
+                        'Reasoning': batch['Reasoning'][k],
+                        'Instance': {
+                            "input" : batch['inputs'][k], 
+                            "output" : [batch['labels'][k]]
+                        },
+                        'Target': batch['labels'][k],
+                        'Prediction': response,
+                        'Full generation': full_generation,  # usefull if we want to feed this into a visualization
+                    }
                     fout.write(json.dumps(complete_dict) + "\n")
 
+                    # sve attention heads for two examples (guessed and didn't guess) for each task
+                    # so, this is very hacky, but I don't see any other way to extract attention patterns
+                    attention_patterns_output = model(
+                        input_ids=outputs[k].unsqueeze(0),
+                        output_attentions=True,
+                    )
 
+                    attention_heads = torch.stack(attention_patterns_output.attentions)
+                    attention_heads = attention_heads.squeeze(1)
+                    attention_heads = attention_heads.detach().cpu().numpy()
 
+                    attention_heads_artifact = {
+                        "attention_heads": attention_heads,  # (layers, heads, seq, seq)
+                    }
+                    safetensors_metadata = {
+                        "model_name": modelname,
+                        "text": full_generation,
+                        "id": batch["id"][k],
+                        "task": batch["Task"][k],
+                        "corruption": args.corruption,
+                        "output": response,
+                        "target": batch["labels"][k],
+                    }
+
+                    _id = batch['id'][k]
+                    _task = batch['Task'][j]
+                    attention_heads_path = f"{model_name_for_save}_{args.corruption}_{_task}_{_id}.safetensors"
+
+                    if not saved_correct_prediction_heads[_task] and response == batch['labels'][k]:
+                        print("Saving correct prediction attention patterns")
+                        saved_correct_prediction_heads[_task] = True
+                        save_file(
+                            tensor_dict=attention_heads_artifact,
+                            filename=output_dir + "/" + attention_heads_path,
+                            metadata=safetensors_metadata,
+                        )
+
+                    if not saved_incorrect_prediction_heads[_task] and response != batch['labels'][k]:
+                        print("Saving *in*correct prediction attention patterns")
+                        saved_incorrect_prediction_heads[_task] = True
+                        save_file(
+                            tensor_dict=attention_heads_artifact,
+                            filename=output_dir + "/" + attention_heads_path,
+                            metadata=safetensors_metadata,
+                        )

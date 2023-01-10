@@ -1,7 +1,10 @@
 import logging
 import random
 import string
-from transformers.data.data_collator import *
+from typing import Optional, Union
+from dataclasses import dataclass
+
+from transformers.tokenization_utils_base import PreTrainedTokenizerBase, PaddingStrategy
 
 
 logger = logging.getLogger(__name__)
@@ -9,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class DataCollatorForNI:
-
     tokenizer: PreTrainedTokenizerBase
     padding: Union[bool, str, PaddingStrategy] = True
     max_source_length: Optional[int] = None
@@ -44,11 +46,8 @@ class DataCollatorForNI:
             categories.append(instance['Categories'])
             reasoning.append(instance['Reasoning'])
 
-            add_task_name = self.add_task_name
             add_task_definition = self.add_task_definition
             num_pos_examples = self.num_pos_examples
-            num_neg_examples = self.num_neg_examples
-            add_explanation = self.add_explanation 
 
             # Creating the prompt
             task_input = ""
@@ -103,6 +102,13 @@ class DataCollatorForNI:
 
             labels = [random.choice(ex["Instance"]["output"]) for ex in batch]
        
-            model_inputs = {"id":id, "Task":task, "Categories":categories ,"Reasoning":reasoning, "inputs": sources, "labels":labels}
+            model_inputs = {
+                "id": id,
+                "Task": task,
+                "Categories": categories,
+                "Reasoning": reasoning,
+                "inputs": sources,
+                "labels":labels,
+            }
 
         return model_inputs
